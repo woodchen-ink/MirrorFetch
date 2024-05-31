@@ -33,7 +33,7 @@ MirrorFetch 是一个用于镜像和缓存外部文件的轻量级服务应用�
         -p 2000:80 \
         -e SOURCE_URLS=http://origin-domain1.com,http://origin-domain2.com \
         -v $(pwd)/data:/data \
-        --name mirrorfetch \
+        --name woodchen/mirrorfetch:latest \
         mirrorfetch:latest
     ```
 
@@ -53,8 +53,7 @@ MirrorFetch 是一个用于镜像和缓存外部文件的轻量级服务应用�
     version: '3'
     services:
       mirrorfetch:
-        image: mirrorfetch:latest
-        build: .
+        image: woodchen/mirrorfetch:latest
         ports:
           - "2000:80"
         environment:
