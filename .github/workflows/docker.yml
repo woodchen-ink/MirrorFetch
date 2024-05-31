@@ -8,7 +8,7 @@ on:
       - v*
 
 env:
-  IMAGE_NAME: MirrorFetch
+  IMAGE_NAME: mirrorfetch
 
 jobs:
   build:
