@@ -19,7 +19,10 @@ WORKDIR /app
 
 # 设置环境变量
 ENV PYTHONUNBUFFERED=1
+# 默认回源域名列表
 ENV SOURCE_URLS=http://origin-domain1.com,http://origin-domain2.com  
+# 默认启用 URL 模式
+ENV DISABLE_URL_MODE=false  
 
 # 暴露端口80
 EXPOSE 80
