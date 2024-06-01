@@ -32,6 +32,7 @@ MirrorFetch 是一个用于镜像和缓存外部文件的轻量级服务应用�
     docker run -d \
         -p 2000:80 \
         -e SOURCE_URLS=http://origin-domain1.com,http://origin-domain2.com \
+        -e DISABLE_URL_MODE=true \ 
         -v $(pwd)/data:/data \
         --name woodchen/mirrorfetch:latest \
         mirrorfetch:latest
@@ -58,6 +59,7 @@ MirrorFetch 是一个用于镜像和缓存外部文件的轻量级服务应用�
           - "2000:80"
         environment:
           - SOURCE_URLS=http://origin-domain1.com,http://origin-domain2.com
+          - DISABLE_URL_MODE=true # 禁用 URL 模式
         volumes:
           - ./data:/data
     ```
@@ -75,6 +77,13 @@ MirrorFetch 是一个用于镜像和缓存外部文件的轻量级服务应用�
     
     - URL 模式：
       - 访问 `http://yourdomain/http://example.com/path/to/file.jpg` 时，程序会从 `http://example.com/path/to/file.jpg` 获取文件，并将文件存储到 `data/example.com/path/to/file.jpg` 中。
+
+## 配置说明
+
+- `SOURCE_URLS`：源站 URL 列表，多个源站 URL 用逗号分隔。
+- `DISABLE_URL_MODE`：是否禁用 URL 模式。如果设置为 `true`，则程序将使用回源列表模式。
+- `/data`：存儲目录。
+
 
 ## 项目结构
 

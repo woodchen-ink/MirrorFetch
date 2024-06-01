@@ -1,12 +1,17 @@
 import os
 import requests
 from flask import Flask, send_file, abort
+from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
 
-# 从环境变量获取源站域名列表，使用逗号分隔，并去掉可能存在的尾部斜杠
+# 获取环境变量
 SOURCE_URLS = [url.rstrip('/') for url in os.environ.get('SOURCE_URLS', '').split(',')]
 LOCAL_STORAGE_PATH = '/data'
+DISABLE_URL_MODE = os.environ.get('DISABLE_URL_MODE', 'false').lower() == 'true'
+
+# 创建线程池优化性能
+executor = ThreadPoolExecutor(max_workers=10)
 
 def fetch_and_store_file(file_path, url=None):
     if url:
@@ -57,7 +62,7 @@ def fetch_and_store_file(file_path, url=None):
 
 @app.route('/<path:file_path>')
 def serve_file(file_path):
-    if "http://" in file_path or "https://" in file_path:
+    if ("http://" in file_path or "https://" in file_path) and not DISABLE_URL_MODE:
         # URL 模式
         url = file_path.replace('|', '://')
         domain = url.split("//")[-1].split('/')[0].replace("/", "_")
@@ -68,7 +73,8 @@ def serve_file(file_path):
             return send_file(local_file_path)
 
         # 如果本地文件不存在，尝试从 URL 获取并存储
-        fetched_file_path = fetch_and_store_file(relative_file_path, url=url)
+        future = executor.submit(fetch_and_store_file, relative_file_path, url)
+        fetched_file_path = future.result()
         if fetched_file_path:
             return send_file(fetched_file_path)
         else:
@@ -83,7 +89,8 @@ def serve_file(file_path):
                 return send_file(local_file_path)
 
         # 如果本地文件不存在，尝试从源站获取并存储
-        fetched_file_path = fetch_and_store_file(file_path)
+        future = executor.submit(fetch_and_store_file, file_path)
+        fetched_file_path = future.result()
         if fetched_file_path:
             return send_file(fetched_file_path)
         else:
